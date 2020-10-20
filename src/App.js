@@ -1,7 +1,6 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import './texas-map-app.css';
 import texasStateGeoJSON from './cb_2019_us/cb_2019_us_state_20m.geojson';
 import texasCountyGeoJSON from './cb_2019_us/cb_2019_us_county_20m.geojson';
 import electionStyle from './light-google-map-style.json';
@@ -16,6 +15,13 @@ const formStyle = {
   width: '100%',
   textAlign: 'center',
 };
+
+const mapStyle = {
+  height: isMobile ? '480px' : '640px',
+  width: '100%',
+};
+
+
 
 class Map extends React.Component {
 
@@ -87,6 +93,7 @@ class Map extends React.Component {
         streetViewControl: false,
         fullscreenControl: false,
         zoomControl: false,
+        draggable: false,
         gestureHandling: 'none',
         mapTypeControl: false,
         styled: electionStyle,
@@ -253,7 +260,7 @@ class Map extends React.Component {
     return (
       <div id="map-container">
         <h1 style={formStyle} >Early Voting Data by Texas County</h1>
-        <h4 style={formStyle} >There are {timeLeft.days} days left until Election Day (Nov 3rd).</h4>
+        <h4 style={formStyle} >There are {timeLeft.days} days left until Election Day</h4>
         <div id="form" style={formStyle} className="form">
           <form>
             <div onChange={this.handleOptionChange.bind(this)} className="form-check">
@@ -301,9 +308,9 @@ class Map extends React.Component {
             </div>
           </form>
         </div>
-        <div id="map" className="map"></div>
+        <div id="map" style={mapStyle} className="map"></div>
         <div id="data" style={formStyle} className="data">
-          <p>The data used for this project comes from the Texas Secretary of State early voting resource:</p>
+          <p>The data used for this project was made available by the Texas Secretary of State:</p>
           <p><a href="https://earlyvoting.texas-election.com/Elections/getElectionDetails.do">https://earlyvoting.texas-election.com/Elections/getElectionDetails.do</a></p>
         </div>
       </div>
