@@ -29,6 +29,10 @@ class Map extends React.Component {
       buildDictNotDone: true,
       selectUpdate: true,
       selectedOption: 'votes',
+      mapHasSelected: false,
+      mapHasMouseOver: false,
+      currentSelection: '',
+      selectedCountyList: [],
     }
   }
 
@@ -103,6 +107,81 @@ class Map extends React.Component {
         map.setCenter(location); 
       });
       map.data.loadGeoJson(texasCountyGeoJSON);
+      map.data.setStyle(function(feature) {
+        feature.setProperty("isSelected", false); 
+      });
+
+    map.data.addListener("click", (event) => {
+      const { selectedCountyList } = this.state;
+      var updatedList = [...selectedCountyList];
+      console.log("click");
+      const isSelected = event.feature.getProperty("isSelected");
+      console.log("Is Selected?", isSelected);
+      if(isSelected === false) {
+        event.feature.setProperty("isSelected", true);
+        map.data.setStyle(event.feature, {strokeWeight: 4});
+        const name = event.feature.getProperty("NAME");
+        const countyString = name + " County, ";
+        const votes = earlyVoteDict[name.toLowerCase()].votes;
+        const numVotes = Number(votes.replace(/,/g,''));
+        const voteString = countyString + votes + ' votes';
+        const registered = earlyVoteDict[name.toLowerCase()].registered;
+        const numRegistered = Number(registered.replace(/,/g,''));
+        const registeredString = voteString + ' out of ' + registered + ' registered, ' + parseFloat((parseFloat(numVotes/numRegistered)*100)).toFixed(1)+"%";
+        const turnout2016 = earlyVoteDict[name.toLowerCase()].turnout2016;
+        const numTurnout2016 = Number(turnout2016.replace(/,/g,''));
+        const turnoutString = voteString + ' out of ' + turnout2016 + ' votes in 2016, ' + parseFloat((parseFloat(numVotes/numTurnout2016)*100)).toFixed(1)+"%";
+        var currentCountyInfo = {
+          voteString: voteString,
+          registeredString: registeredString,
+          turnoutString: turnoutString,
+          name: name,
+          numVotes: numVotes, 
+          numRegistered: numRegistered,
+          numTurnout2016: numTurnout2016
+        }
+        updatedList.push(currentCountyInfo);
+        this.setState({ mapHasSelected: true, selectedCountyList: updatedList });
+      } else {
+        const name = event.feature.getProperty("NAME");
+        event.feature.setProperty("isSelected", false);
+        map.data.setStyle(event.feature, {strokeWeight: 1.5});
+        this.removeCounty(name); 
+      }
+    });
+
+    map.data.addListener("mouseover", (event) => {
+      const { selectedOption, selectedCountyList } = this.state;
+      var updatedList = [...selectedCountyList];
+      map.data.overrideStyle(event.feature, {strokeWeight: 4});
+      const name = event.feature.getProperty("NAME");
+      const countyString = name + " County, ";
+      const votes = earlyVoteDict[name.toLowerCase()].votes;
+      const numVotes = Number(votes.replace(/,/g,''));
+      const voteString = countyString + votes + ' votes';
+      const registered = earlyVoteDict[name.toLowerCase()].registered;
+      const numRegistered = Number(registered.replace(/,/g,''));
+      const registeredString = voteString + ' out of ' + registered + ' registered, ' + parseFloat((parseFloat(numVotes/registered)*100)).toFixed(1)+"%";
+      const turnout2016 = earlyVoteDict[name.toLowerCase()].turnout2016;
+      const numTurnout2016 = Number(turnout2016.replace(/,/g,''));
+      const turnoutString = voteString + ' out of ' + turnout2016 + ' votes in 2016, ' + parseFloat((parseFloat(numVotes/turnout2016)*100)).toFixed(1)+"%";
+      var displayValue;
+      if(selectedOption === 'votes') {
+        displayValue = voteString;
+      } else if(selectedOption === 'registered') {
+        displayValue = registeredString;
+      } else if(selectedOption === 'turnout2016') {
+        displayValue = turnoutString;
+      }
+      this.setState({ mapHasMouseOver: true, currentInfo: displayValue });
+    });
+
+    map.data.addListener("mouseout", (event) => {
+      if(event.feature.getProperty("isSelected") === false){
+        map.data.revertStyle(event.feature);
+      }
+      this.setState({ mapHasMouseOver: false });
+    });
 
       this.setState({ map: map });
     });
@@ -117,9 +196,73 @@ class Map extends React.Component {
     this.setState({ buildDictNotDone: false }); 
   }
 
-  fillInMap() {
-    const { map, selectedOption } = this.state;
+  renderCountyList() {
+    var {selectedOption, selectedCountyList} = this.state;
+    const countyList = [...selectedCountyList];
+    var displayIndex;
+    if(selectedOption === 'votes') {
+      displayIndex = 'voteString';
+    } else if(selectedOption === 'registered') {
+      displayIndex = 'registeredString';
+    } else if(selectedOption === 'turnout2016') {
+      displayIndex = 'turnoutString';
+    }
+    return (
+      countyList.map((county, index) => (
+        <p id={index}>{county[displayIndex]}</p>
+      )
+    ));
+  }
+  
+  renderTotals() {
+    var { selectedOption, selectedCountyList } = this.state;
+    const countyList = [...selectedCountyList];
+    const voteIndex = 'numVotes';
+    var denominatorIndex;
+    var totalVotes=0;
+    var denominatorTotal=0;
+    if(selectedOption === 'votes') {
+      //return vote totals
+    } else if(selectedOption === 'registered') {
+      denominatorIndex = 'numRegistered';
+    } else if(selectedOption === 'turnout2016') {
+      denominatorIndex = 'numTurnout2016';
+    }
+    countyList.map(function(county) {
+      totalVotes += county[voteIndex];
+      denominatorTotal += county[denominatorIndex];
+    });
+    const voteString = "Combined Results: " + totalVotes.toLocaleString('en') + ' votes';
+    var displayString;
+    if(selectedOption === 'votes') {
+      //return vote totals
+      displayString = voteString;
+    } else if(selectedOption === 'registered') {
+      displayString = voteString + ' out of ' + denominatorTotal.toLocaleString('en') + ' registered, ' + parseFloat((parseFloat(totalVotes/denominatorTotal)*100)).toFixed(1)+"%";
+    } else if(selectedOption === 'turnout2016') {
+      displayString = voteString + ' out of ' + denominatorTotal.toLocaleString('en') + ' votes in 2016, ' + parseFloat((parseFloat(totalVotes/denominatorTotal)*100)).toFixed(1)+"%";
+    }
+    return (
+      <h4 style={formStyle}>{displayString}</h4>
+    );
+  }
 
+  removeCounty(countyName) {
+    const { selectedCountyList } = this.state;
+    var countyList = [...selectedCountyList];
+    var updatedList = []; 
+    countyList.map(function(county) {
+      if(county.name !== countyName) {
+        updatedList.push(county);
+      }
+    });
+    this.setState({ selectedCountyList: updatedList });
+  }
+
+
+  fillInMap() {
+    const { map, selectedOption, selectedCountyList } = this.state;
+    var updatedList = [...selectedCountyList];
     map.data.setStyle(function(feature) {
       var name = feature.getProperty('NAME');
       var denominator;
@@ -139,64 +282,6 @@ class Map extends React.Component {
         fillOpacity: 1.0,
       }
     });
-
-    const infowindow = new google.maps.InfoWindow();
-   
-    google.maps.event.clearListeners(map.data, 'click'); 
-    google.maps.event.clearListeners(map.data, 'mouseover'); 
-    google.maps.event.clearListeners(map.data, 'mouseout'); 
-
-    map.data.addListener("click", (event) => {
-      var name = event.feature.getProperty("NAME");
-      infowindow.close();
-      infowindow.setPosition(event.latLng);
-      var displayValue = "";
-      var numerator = Number(earlyVoteDict[name.toLowerCase()].votes.replace(/,/g,''));
-      var denominator; 
-      var votesStr = earlyVoteDict[name.toLowerCase()].votes + ' votes';
-      if(selectedOption === 'votes') {
-      } else if(selectedOption === 'registered') {
-        denominator = Number(earlyVoteDict[name.toLowerCase()].registered.replace(/,/g,''));
-        displayValue += parseFloat((parseFloat(numerator/denominator)*100)).toFixed(0)+"%";
-        displayValue += ', ';
-      } else if(selectedOption === 'turnout2016') {
-        denominator = Number(earlyVoteDict[name.toLowerCase()].turnout2016.replace(/,/g,''));
-        displayValue += parseFloat((parseFloat(numerator/denominator)*100)).toFixed(0)+"%";
-        displayValue += ', ';
-      }
-      displayValue += votesStr;
-      infowindow.setContent(name.bold() + ": " + displayValue);
-      infowindow.open(map); 
-    });
-
-    map.data.addListener("mouseover", (event) => {
-      var name = event.feature.getProperty("NAME");
-      infowindow.close();
-      infowindow.setPosition(event.latLng);
-      var displayValue = "";
-      var numerator = Number(earlyVoteDict[name.toLowerCase()].votes.replace(/,/g,''));
-      var denominator; 
-      var votesStr = earlyVoteDict[name.toLowerCase()].votes + ' votes';
-      if(selectedOption === 'votes') {
-      } else if(selectedOption === 'registered') {
-        denominator = Number(earlyVoteDict[name.toLowerCase()].registered.replace(/,/g,''));
-        displayValue += parseFloat((parseFloat(numerator/denominator)*100)).toFixed(0)+"%";
-        displayValue += ', ';
-      } else if(selectedOption === 'turnout2016') {
-        denominator = Number(earlyVoteDict[name.toLowerCase()].turnout2016.replace(/,/g,''));
-        displayValue += parseFloat((parseFloat(numerator/denominator)*100)).toFixed(0)+"%";
-        displayValue += ', ';
-      }
-      displayValue += votesStr;
-      infowindow.setContent(name.bold() + ": " + displayValue);
-      infowindow.open(map); 
-    });
-
-    map.data.addListener("mouseout", (event) => {
-      map.data.revertStyle();
-      infowindow.close();
-    });
-
   }
 
   handleOptionChange(event) {
@@ -253,13 +338,13 @@ class Map extends React.Component {
   }
 
   render () {
-    const { map, selectedOption } = this.state;
-    var electionDay = new Date(2020, 10, 2); 
+    const { map, selectedOption, mapHasMouseOver, mapHasSelected, currentInfo, selectedCountyList } = this.state;
+    var electionDay = new Date(2020, 10, 3); 
     var timeLeft = this.calculateCountdown(electionDay); 
     return (
       <div id="map-container">
         <h1 style={formStyle} >Early Voting Data for Texas Counties</h1>
-        <h4 style={formStyle} >There are {timeLeft.days} days left until Election Day</h4>
+        <h4 style={formStyle} >There are {timeLeft.days + 1} days left until Election Day</h4>
         <div id="form" style={formStyle} className="form">
           <form>
             <div onChange={this.handleOptionChange.bind(this)} className="form-check">
@@ -308,6 +393,25 @@ class Map extends React.Component {
           </form>
         </div>
         <div id="map" style={mapStyle} className="map"></div>
+        { mapHasMouseOver ? (
+          <div id="selected-counties">
+            <h4 style={formStyle}>{currentInfo}</h4>
+          </div>
+        ) : 
+          <div id="selected-counties">
+            <h4 style={formStyle}> </h4>
+          </div>
+        }
+        { (mapHasSelected && selectedCountyList.length) ? ( 
+          <div id="selected-counties" style={formStyle}> 
+          {this.renderCountyList()}
+          {this.renderTotals()}
+          </div>
+        ) : 
+          <div id="selected-counties">
+            <h4 style={formStyle}> </h4>
+          </div>
+        }
         <div id="data" style={formStyle} className="data">
           <p>The data used for this project was made available by the Texas Secretary of State:</p>
           <p><a href="https://earlyvoting.texas-election.com/Elections/getElectionDetails.do">https://earlyvoting.texas-election.com/Elections/getElectionDetails.do</a></p>
