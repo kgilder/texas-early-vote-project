@@ -88,15 +88,15 @@ class Map extends React.Component {
       var mapOptions = {
         zoom: zoom, 
         minZoom: zoom,
-        maxZoom: zoom,
+        //maxZoom: zoom,
         center: location,
         streetViewControl: false,
         fullscreenControl: false,
         zoomControl: false,
-        draggable: false, 
-        scrollwheel: false, 
+        //draggable: false, 
+        //scrollwheel: false, 
         disableDoubleClickZoom: true,
-        gestureHandling: 'none',
+        //gestureHandling: 'none',
         mapTypeControl: false,
         styled: electionStyle,
       };
@@ -131,11 +131,11 @@ class Map extends React.Component {
       if(selectedOption === 'votes') {
         denominator = 500000;
       } else if(selectedOption === 'registered') {
-        denominator = Number(earlyVoteDict[name.toLowerCase()].registered.replace(',',''));
+        denominator = Number(earlyVoteDict[name.toLowerCase()].registered.replace(/,/g,''));
       } else if(selectedOption === 'turnout2016') {
-        denominator = Number(earlyVoteDict[name.toLowerCase()].turnout2016.replace(',',''));
+        denominator = Number(earlyVoteDict[name.toLowerCase()].turnout2016.replace(/,/g,''));
       }
-      var numerator = Number(earlyVoteDict[name.toLowerCase()].votes.replace(',',''));
+      var numerator = Number(earlyVoteDict[name.toLowerCase()].votes.replace(/,/g,''));
       var percentage = parseFloat(100 - (parseFloat(numerator/denominator)*50)).toFixed(0)+"%";
       var color = "hsl(240, 100%," + percentage + ")";
       return {
@@ -156,20 +156,24 @@ class Map extends React.Component {
       infowindow.close();
       infowindow.setPosition(event.latLng);
       var displayValue = "";
-      var numerator = Number(earlyVoteDict[name.toLowerCase()].votes.replace(',',''));
+      var numerator = Number(earlyVoteDict[name.toLowerCase()].votes.replace(/,/g,''));
       var denominator; 
       var votesStr = earlyVoteDict[name.toLowerCase()].votes + ' votes';
       if(selectedOption === 'votes') {
       } else if(selectedOption === 'registered') {
-        denominator = Number(earlyVoteDict[name.toLowerCase()].registered.replace(',',''));
+        denominator = Number(earlyVoteDict[name.toLowerCase()].registered.replace(/,/g,''));
         displayValue += parseFloat((parseFloat(numerator/denominator)*100)).toFixed(0)+"%";
         displayValue += ', ';
       } else if(selectedOption === 'turnout2016') {
-        denominator = Number(earlyVoteDict[name.toLowerCase()].turnout2016.replace(',',''));
+        denominator = Number(earlyVoteDict[name.toLowerCase()].turnout2016.replace(/,/g,''));
         displayValue += parseFloat((parseFloat(numerator/denominator)*100)).toFixed(0)+"%";
         displayValue += ', ';
       }
       displayValue += votesStr;
+      if(name.toLowerCase() === 'harris'){
+        console.log(name, votesStr, numerator, denominator);
+        console.log(earlyVoteDict[name.toLowerCase()].registered.replace(/,/g,''));
+      }
       infowindow.setContent(name.bold() + ": " + displayValue);
       infowindow.open(map); 
     });
@@ -179,16 +183,16 @@ class Map extends React.Component {
       infowindow.close();
       infowindow.setPosition(event.latLng);
       var displayValue = "";
-      var numerator = Number(earlyVoteDict[name.toLowerCase()].votes.replace(',',''));
+      var numerator = Number(earlyVoteDict[name.toLowerCase()].votes.replace(/,/g,''));
       var denominator; 
       var votesStr = earlyVoteDict[name.toLowerCase()].votes + ' votes';
       if(selectedOption === 'votes') {
       } else if(selectedOption === 'registered') {
-        denominator = Number(earlyVoteDict[name.toLowerCase()].registered.replace(',',''));
+        denominator = Number(earlyVoteDict[name.toLowerCase()].registered.replace(/,/g,''));
         displayValue += parseFloat((parseFloat(numerator/denominator)*100)).toFixed(0)+"%";
         displayValue += ', ';
       } else if(selectedOption === 'turnout2016') {
-        denominator = Number(earlyVoteDict[name.toLowerCase()].turnout2016.replace(',',''));
+        denominator = Number(earlyVoteDict[name.toLowerCase()].turnout2016.replace(/,/g,''));
         displayValue += parseFloat((parseFloat(numerator/denominator)*100)).toFixed(0)+"%";
         displayValue += ', ';
       }
