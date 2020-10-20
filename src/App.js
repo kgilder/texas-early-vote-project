@@ -106,9 +106,9 @@ class Map extends React.Component {
       map = new google.maps.Map(document.getElementById('map'), mapOptions);
       map.mapTypes.set('texas_county_map', electionStyledMapType);
       map.setMapTypeId('texas_county_map');
-      map.addListener("dragend", (event) => {
-        map.setCenter(location); 
-      });
+      //map.addListener("dragend", (event) => {
+      //  map.setCenter(location); 
+      //});
       map.data.loadGeoJson(texasCountyGeoJSON);
       map.data.setStyle(function(feature) {
         feature.setProperty("isSelected", false); 
