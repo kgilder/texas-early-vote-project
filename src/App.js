@@ -33,6 +33,7 @@ class Map extends React.Component {
       mapHasMouseOver: false,
       currentSelection: '',
       selectedCountyList: [],
+      updatedDate: '',
     }
   }
 
@@ -114,9 +115,7 @@ class Map extends React.Component {
     map.data.addListener("click", (event) => {
       const { selectedCountyList } = this.state;
       var updatedList = [...selectedCountyList];
-      console.log("click");
       const isSelected = event.feature.getProperty("isSelected");
-      console.log("Is Selected?", isSelected);
       if(isSelected === false) {
         event.feature.setProperty("isSelected", true);
         map.data.setStyle(event.feature, {strokeWeight: 4});
@@ -190,10 +189,14 @@ class Map extends React.Component {
   buildDictionary() {
     const { map, googleData } = this.state;
     earlyVoteDict = {}; 
+    var updatedDate;
     googleData.map(function(row) {
       earlyVoteDict[row.County.toLowerCase()] = { votes: row['Cumulative In-Person And Mail Voters'], registered: row['Registered Voters'], turnout2016: row['2016 Total Turnout'] };
+      if(row.County.toLowerCase() === 'anderson') {
+        updatedDate = row['Updated Date'];
+      }
     });
-    this.setState({ buildDictNotDone: false }); 
+    this.setState({ buildDictNotDone: false, updatedDate: updatedDate }); 
   }
 
   renderCountyList() {
@@ -338,7 +341,7 @@ class Map extends React.Component {
   }
 
   render () {
-    const { map, selectedOption, mapHasMouseOver, mapHasSelected, currentInfo, selectedCountyList } = this.state;
+    const { map, selectedOption, mapHasMouseOver, mapHasSelected, currentInfo, selectedCountyList, updatedDate } = this.state;
     var electionDay = new Date(2020, 10, 3); 
     var timeLeft = this.calculateCountdown(electionDay); 
     return (
@@ -412,6 +415,9 @@ class Map extends React.Component {
             <h4 style={formStyle}> </h4>
           </div>
         }
+        <div id="updated-date" style={formStyle} className="updated-date">
+          <p>Updated as of {updatedDate}.</p>
+        </div>
         <div id="data" style={formStyle} className="data">
           <p>The data used for this project was made available by the Texas Secretary of State:</p>
           <p><a href="https://earlyvoting.texas-election.com/Elections/getElectionDetails.do">https://earlyvoting.texas-election.com/Elections/getElectionDetails.do</a></p>
