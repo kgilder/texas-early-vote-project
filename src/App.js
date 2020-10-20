@@ -119,7 +119,7 @@ class Map extends React.Component {
       });
 
     map.data.addListener("click", (event) => {
-      const { selectedCountyList } = this.state;
+      const { selectedCountyList, texasInfo } = this.state;
       var updatedList = [...selectedCountyList];
       const isSelected = event.feature.getProperty("isSelected");
       if(isSelected === false) {
@@ -129,13 +129,14 @@ class Map extends React.Component {
         const countyString = name + " County, ";
         const votes = earlyVoteDict[name.toLowerCase()].votes;
         const numVotes = Number(votes.replace(/,/g,''));
-        const voteString = countyString + votes + ' votes';
+        var voteString = countyString + votes + ' votes';
         const registered = earlyVoteDict[name.toLowerCase()].registered;
         const numRegistered = Number(registered.replace(/,/g,''));
         const registeredString = voteString + ' out of ' + registered + ' registered, ' + parseFloat((parseFloat(numVotes/numRegistered)*100)).toFixed(1)+"%";
         const turnout2016 = earlyVoteDict[name.toLowerCase()].turnout2016;
         const numTurnout2016 = Number(turnout2016.replace(/,/g,''));
         const turnoutString = voteString + ' out of ' + turnout2016 + ' votes in 2016, ' + parseFloat((parseFloat(numVotes/numTurnout2016)*100)).toFixed(1)+"%";
+        voteString += ', ' + parseFloat((numVotes/texasInfo.numVotes)*100).toFixed(1)+"% of all votes";
         var currentCountyInfo = {
           voteString: voteString,
           registeredString: registeredString,
@@ -156,14 +157,14 @@ class Map extends React.Component {
     });
 
     map.data.addListener("mouseover", (event) => {
-      const { selectedOption, selectedCountyList } = this.state;
+      const { selectedOption, selectedCountyList, texasInfo } = this.state;
       var updatedList = [...selectedCountyList];
       map.data.overrideStyle(event.feature, {strokeWeight: 4});
       const name = event.feature.getProperty("NAME");
       const countyString = name + " County, ";
       const votes = earlyVoteDict[name.toLowerCase()].votes;
       const numVotes = Number(votes.replace(/,/g,''));
-      const voteString = countyString + votes + ' votes';
+      var voteString = countyString + votes + ' votes';
       const registered = earlyVoteDict[name.toLowerCase()].registered;
       const numRegistered = Number(registered.replace(/,/g,''));
       const registeredString = voteString + ' out of ' + registered + ' registered, ' + parseFloat((parseFloat(numVotes/numRegistered)*100)).toFixed(1)+"%";
@@ -172,7 +173,7 @@ class Map extends React.Component {
       const turnoutString = voteString + ' out of ' + turnout2016 + ' votes in 2016, ' + parseFloat((parseFloat(numVotes/numTurnout2016)*100)).toFixed(1)+"%";
       var displayValue;
       if(selectedOption === 'votes') {
-        displayValue = voteString;
+        displayValue = voteString + ', ' + parseFloat((numVotes/texasInfo.numVotes)*100).toFixed(1)+"% of all votes";
       } else if(selectedOption === 'registered') {
         displayValue = registeredString;
       } else if(selectedOption === 'turnout2016') {
@@ -280,7 +281,7 @@ class Map extends React.Component {
   }
 
   renderTotals() {
-    var { selectedOption, selectedCountyList } = this.state;
+    var { selectedOption, selectedCountyList, texasInfo } = this.state;
     const countyList = [...selectedCountyList];
     const voteIndex = 'numVotes';
     var denominatorIndex;
@@ -301,11 +302,12 @@ class Map extends React.Component {
     var displayString;
     if(selectedOption === 'votes') {
       //return vote totals
-      displayString = voteString;
+      denominatorTotal = texasInfo.numVotes;
+      displayString = voteString + ', ' + parseFloat((totalVotes/denominatorTotal)*100).toFixed(1)+"% of all votes";
     } else if(selectedOption === 'registered') {
-      displayString = voteString + ' out of ' + denominatorTotal.toLocaleString('en') + ' registered, ' + parseFloat((parseFloat(totalVotes/denominatorTotal)*100)).toFixed(1)+"%";
+      displayString = voteString + ' out of ' + denominatorTotal.toLocaleString('en') + ' registered, ' + parseFloat((totalVotes/denominatorTotal)*100).toFixed(1)+"%";
     } else if(selectedOption === 'turnout2016') {
-      displayString = voteString + ' out of ' + denominatorTotal.toLocaleString('en') + ' votes in 2016, ' + parseFloat((parseFloat(totalVotes/denominatorTotal)*100)).toFixed(1)+"%";
+      displayString = voteString + ' out of ' + denominatorTotal.toLocaleString('en') + ' votes in 2016, ' + parseFloat((totalVotes/denominatorTotal)*100).toFixed(1)+"%";
     }
     return (
       <h4 style={formStyle}>{displayString}</h4>
