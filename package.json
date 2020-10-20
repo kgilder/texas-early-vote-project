@@ -1,14 +1,19 @@
 {
-  "name": "texas-early-vote-project",
+  "name": "texas-map-app",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@google/markerclusterer": "^2.0.8",
+    "@google/markerclustererplus": "^5.0.4",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
-    "react": "^16.14.0",
-    "react-dom": "^16.14.0",
-    "react-scripts": "3.4.3"
+    "dotenv": "^8.2.0",
+    "react": "^16.13.1",
+    "react-db-google-sheets": "^2.0.0",
+    "react-dom": "^16.13.1",
+    "react-scripts": "3.4.1",
+    "tabletop": "^1.6.3"
   },
   "scripts": {
     "start": "react-scripts start",
