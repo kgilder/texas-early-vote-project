@@ -95,7 +95,7 @@ class Map extends React.Component {
         zoomControl: false,
         draggable: false, 
         scrollwheel: false, 
-        disableDoubleClickZoom: true
+        disableDoubleClickZoom: true,
         gestureHandling: 'none',
         mapTypeControl: false,
         styled: electionStyle,
