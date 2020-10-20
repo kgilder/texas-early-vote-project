@@ -161,10 +161,10 @@ class Map extends React.Component {
       const voteString = countyString + votes + ' votes';
       const registered = earlyVoteDict[name.toLowerCase()].registered;
       const numRegistered = Number(registered.replace(/,/g,''));
-      const registeredString = voteString + ' out of ' + registered + ' registered, ' + parseFloat((parseFloat(numVotes/registered)*100)).toFixed(1)+"%";
+      const registeredString = voteString + ' out of ' + registered + ' registered, ' + parseFloat((parseFloat(numVotes/numRegistered)*100)).toFixed(1)+"%";
       const turnout2016 = earlyVoteDict[name.toLowerCase()].turnout2016;
       const numTurnout2016 = Number(turnout2016.replace(/,/g,''));
-      const turnoutString = voteString + ' out of ' + turnout2016 + ' votes in 2016, ' + parseFloat((parseFloat(numVotes/turnout2016)*100)).toFixed(1)+"%";
+      const turnoutString = voteString + ' out of ' + turnout2016 + ' votes in 2016, ' + parseFloat((parseFloat(numVotes/numTurnout2016)*100)).toFixed(1)+"%";
       var displayValue;
       if(selectedOption === 'votes') {
         displayValue = voteString;
