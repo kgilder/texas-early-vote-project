@@ -1,7 +1,5 @@
 
 import React from 'react';
-import PropTypes from 'prop-types';
-import texasStateGeoJSON from './cb_2019_us/cb_2019_us_state_20m.geojson';
 import texasCountyGeoJSON from './cb_2019_us/cb_2019_us_county_20m.geojson';
 import electionStyle from './light-google-map-style.json';
 import Tabletop from 'tabletop';
@@ -126,14 +124,14 @@ class Map extends React.Component {
       var name = feature.getProperty('NAME');
       var denominator;
       if(selectedOption === 'votes') {
-        denominator = 500000;
+        denominator = 1000000;
       } else if(selectedOption === 'registered') {
         denominator = Number(earlyVoteDict[name.toLowerCase()].registered.replace(/,/g,''));
       } else if(selectedOption === 'turnout2016') {
         denominator = Number(earlyVoteDict[name.toLowerCase()].turnout2016.replace(/,/g,''));
       }
       var numerator = Number(earlyVoteDict[name.toLowerCase()].votes.replace(/,/g,''));
-      var percentage = parseFloat(100 - (parseFloat(numerator/denominator)*50)).toFixed(0)+"%";
+      var percentage = parseFloat(100 - (parseFloat(numerator/denominator)*80)).toFixed(0)+"%";
       var color = "hsl(240, 100%," + percentage + ")";
       return {
         fillColor: color,
@@ -260,7 +258,7 @@ class Map extends React.Component {
     var timeLeft = this.calculateCountdown(electionDay); 
     return (
       <div id="map-container">
-        <h1 style={formStyle} >Early Voting Data by Texas County</h1>
+        <h1 style={formStyle} >Early Voting Data for Texas Counties</h1>
         <h4 style={formStyle} >There are {timeLeft.days} days left until Election Day</h4>
         <div id="form" style={formStyle} className="form">
           <form>
