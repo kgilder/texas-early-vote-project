@@ -7,8 +7,6 @@ import electionStyle from './light-google-map-style.json';
 import Tabletop from 'tabletop';
 import {isMobile} from 'react-device-detect';
 
-console.log(process.env);
-
 var earlyVoteDict = null;
 
 const formStyle = {
@@ -51,7 +49,6 @@ class Map extends React.Component {
 
         // Load the Google Maps API
         var script = document.createElement("script");
-        console.log("API", process.env.REACT_APP_GOOGLE_API_KEY); 
         script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_API_KEY}&callback=resolveGoogleMapsPromise`;
         script.async = true;
         document.body.appendChild(script);
@@ -170,10 +167,6 @@ class Map extends React.Component {
         displayValue += ', ';
       }
       displayValue += votesStr;
-      if(name.toLowerCase() === 'harris'){
-        console.log(name, votesStr, numerator, denominator);
-        console.log(earlyVoteDict[name.toLowerCase()].registered.replace(/,/g,''));
-      }
       infowindow.setContent(name.bold() + ": " + displayValue);
       infowindow.open(map); 
     });
