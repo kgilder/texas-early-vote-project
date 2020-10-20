@@ -109,6 +109,10 @@ class Map extends React.Component {
       //map.addListener("dragend", (event) => {
       //  map.setCenter(location); 
       //});
+      map.addListener("dblclick", (event) => {
+        map.setCenter(location);
+        map.setZoom(zoom);
+      });
       map.data.loadGeoJson(texasCountyGeoJSON);
       map.data.setStyle(function(feature) {
         feature.setProperty("isSelected", false); 
