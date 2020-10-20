@@ -11,6 +11,7 @@
     "dotenv": "^8.2.0",
     "react": "^16.13.1",
     "react-db-google-sheets": "^2.0.0",
+    "react-device-detect": "^1.14.0",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
     "tabletop": "^1.6.3"

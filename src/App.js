@@ -6,6 +6,7 @@ import texasStateGeoJSON from './cb_2019_us/cb_2019_us_state_20m.geojson';
 import texasCountyGeoJSON from './cb_2019_us/cb_2019_us_county_20m.geojson';
 import electionStyle from './light-google-map-style.json';
 import Tabletop from 'tabletop';
+import {isMobile} from 'react-device-detect';
 
 console.log(process.env);
 
@@ -76,10 +77,12 @@ class Map extends React.Component {
 
       var electionStyledMapType = new google.maps.StyledMapType (electionStyle, {name: 'Texas County Map'});
 
+      var zoom = isMobile ? 5 : 6;
+
       var mapOptions = {
-        zoom: 6, 
-        minZoom: 6,
-        maxZoom: 6,
+        zoom: zoom, 
+        minZoom: zoom,
+        maxZoom: zoom,
         center: location,
         streetViewControl: false,
         fullscreenControl: false,
