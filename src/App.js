@@ -93,7 +93,9 @@ class Map extends React.Component {
         streetViewControl: false,
         fullscreenControl: false,
         zoomControl: false,
-        draggable: false,
+        draggable: false, 
+        scrollwheel: false, 
+        disableDoubleClickZoom: true
         gestureHandling: 'none',
         mapTypeControl: false,
         styled: electionStyle,
@@ -102,7 +104,9 @@ class Map extends React.Component {
       map = new google.maps.Map(document.getElementById('map'), mapOptions);
       map.mapTypes.set('texas_county_map', electionStyledMapType);
       map.setMapTypeId('texas_county_map');
-
+      map.addListener("dragend", (event) => {
+        map.setCenter(location); 
+      });
       map.data.loadGeoJson(texasCountyGeoJSON);
 
       this.setState({ map: map });
