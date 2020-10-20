@@ -34,6 +34,8 @@ class Map extends React.Component {
       currentSelection: '',
       selectedCountyList: [],
       updatedDate: '',
+      texasInfo: {},
+      texasInfoNotDone: true,
     }
   }
 
@@ -186,10 +188,37 @@ class Map extends React.Component {
     });
   }
 
+  getTexasInfo() {
+    var texasInfo = {};
+    console.log('total numbers');
+    const name = 'total';
+    const countyString = "State of Texas, ";
+    const votes = earlyVoteDict[name.toLowerCase()].votes;
+    const numVotes = Number(votes.replace(/,/g,''));
+    const voteString = countyString + votes + ' votes';
+    const registered = earlyVoteDict[name.toLowerCase()].registered;
+    const numRegistered = Number(registered.replace(/,/g,''));
+    const registeredString = voteString + ' out of ' + registered + ' registered, ' + parseFloat((parseFloat(numVotes/numRegistered)*100)).toFixed(1)+"%";
+    const turnout2016 = earlyVoteDict[name.toLowerCase()].turnout2016;
+    const numTurnout2016 = Number(turnout2016.replace(/,/g,''));
+    const turnoutString = voteString + ' out of ' + turnout2016 + ' votes in 2016, ' + parseFloat((parseFloat(numVotes/numTurnout2016)*100)).toFixed(1)+"%";
+    texasInfo = {
+      voteString: voteString,
+      registeredString: registeredString,
+      turnoutString: turnoutString,
+      name: name,
+      numVotes: numVotes, 
+      numRegistered: numRegistered,
+      numTurnout2016: numTurnout2016
+    }
+    console.log(texasInfo);
+    this.setState({ texasInfoNotDone: false, texasInfo: texasInfo }); 
+  }
+
   buildDictionary() {
     const { map, googleData } = this.state;
     earlyVoteDict = {}; 
-    var updatedDate;
+    var updatedDate = '';
     googleData.map(function(row) {
       earlyVoteDict[row.County.toLowerCase()] = { votes: row['Cumulative In-Person And Mail Voters'], registered: row['Registered Voters'], turnout2016: row['2016 Total Turnout'] };
       if(row.County.toLowerCase() === 'anderson') {
@@ -217,6 +246,35 @@ class Map extends React.Component {
     ));
   }
   
+  renderTexasInfo() {
+    var { selectedOption, texasInfo } = this.state;
+    const voteIndex = 'numVotes';
+    var denominatorIndex;
+    var totalVotes=0;
+    var denominatorTotal=0;
+    if(selectedOption === 'votes') {
+      //return vote totals
+    } else if(selectedOption === 'registered') {
+      denominatorIndex = 'numRegistered';
+    } else if(selectedOption === 'turnout2016') {
+      denominatorIndex = 'numTurnout2016';
+    }
+    totalVotes += texasInfo[voteIndex];
+    denominatorTotal += texasInfo[denominatorIndex];
+    const voteString = "State of Texas: " + totalVotes.toLocaleString('en') + ' votes';
+    var displayString;
+    if(selectedOption === 'votes') {
+      displayString = voteString;
+    } else if(selectedOption === 'registered') {
+      displayString = voteString + ' out of ' + denominatorTotal.toLocaleString('en') + ' registered, ' + parseFloat((parseFloat(totalVotes/denominatorTotal)*100)).toFixed(1)+"%";
+    } else if(selectedOption === 'turnout2016') {
+      displayString = voteString + ' out of ' + denominatorTotal.toLocaleString('en') + ' votes in 2016, ' + parseFloat((parseFloat(totalVotes/denominatorTotal)*100)).toFixed(1)+"%";
+    }
+    return (
+      <h4 style={formStyle}>{displayString}</h4>
+    );
+  }
+
   renderTotals() {
     var { selectedOption, selectedCountyList } = this.state;
     const countyList = [...selectedCountyList];
@@ -292,11 +350,14 @@ class Map extends React.Component {
     this.setState({ selectedOption: selectedOption });
   }
   componentDidUpdate() {
-    const { googleData, buildDictNotDone } = this.state;
+    const { googleData, buildDictNotDone, texasInfoNotDone } = this.state;
     if(googleData) {
       if (googleData.length === 255) {
         if(buildDictNotDone) {
           this.buildDictionary(); 
+        }
+        if(texasInfoNotDone) {
+          this.getTexasInfo();
         }
         this.fillInMap();
       }
@@ -341,7 +402,7 @@ class Map extends React.Component {
   }
 
   render () {
-    const { map, selectedOption, mapHasMouseOver, mapHasSelected, currentInfo, selectedCountyList, updatedDate } = this.state;
+    const { map, selectedOption, mapHasMouseOver, mapHasSelected, currentInfo, selectedCountyList, updatedDate, texasInfoNotDone } = this.state;
     var electionDay = new Date(2020, 10, 3); 
     var timeLeft = this.calculateCountdown(electionDay); 
     return (
@@ -400,21 +461,30 @@ class Map extends React.Component {
           <div id="selected-counties">
             <h4 style={formStyle}>{currentInfo}</h4>
           </div>
-        ) : 
+        ) : (
           <div id="selected-counties">
             <h4 style={formStyle}> </h4>
           </div>
-        }
+        )}
         { (mapHasSelected && selectedCountyList.length) ? ( 
           <div id="selected-counties" style={formStyle}> 
           {this.renderCountyList()}
-          {this.renderTotals()}
+            { (selectedCountyList.length > 1) ? this.renderTotals() : null }
           </div>
-        ) : 
+        ) : ( 
           <div id="selected-counties">
             <h4 style={formStyle}> </h4>
           </div>
-        }
+        )}
+        { texasInfoNotDone ? (
+          <div id="selected-counties">
+            <h4 style={formStyle}> </h4>
+          </div>
+        ) : (
+          <div id="selected-counties" style={formStyle}> 
+          {this.renderTexasInfo()}
+          </div>
+        )}
         <div id="updated-date" style={formStyle} className="updated-date">
           <p>Updated as of {updatedDate}.</p>
         </div>
