@@ -495,7 +495,7 @@ class Map extends React.Component {
           <p>Updated as of {updatedDate}.</p>
         </div>
         <div id="data" style={formStyle} className="data">
-          <p>The data used for this project was made available by the Texas Secretary of State:</p>
+          <p>The data used for this project was made available by the Texas Secretary of State Office:</p>
           <p><a href="https://earlyvoting.texas-election.com/Elections/getElectionDetails.do">https://earlyvoting.texas-election.com/Elections/getElectionDetails.do</a></p>
         </div>
       </div>
