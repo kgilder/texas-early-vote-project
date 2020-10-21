@@ -4,6 +4,7 @@ import texasCountyGeoJSON from './cb_2019_us/cb_2019_us_county_20m.geojson';
 import electionStyle from './light-google-map-style.json';
 import Tabletop from 'tabletop';
 import {isMobile} from 'react-device-detect';
+import {SiTwitter, SiInstagram, SiGmail} from 'react-icons/si';
 
 var earlyVoteDict = null;
 
@@ -492,11 +493,19 @@ class Map extends React.Component {
           </div>
         )}
         <div id="updated-date" style={formStyle} className="updated-date">
-          <p>Updated as of {updatedDate}.</p>
+          <p style={{...formStyle}, {fontSize: 12}}><br/>Updated as of {updatedDate}.</p>
         </div>
         <div id="data" style={formStyle} className="data">
-          <p>The data used for this project was made available by the Texas Secretary of State Office:</p>
-          <p><a href="https://earlyvoting.texas-election.com/Elections/getElectionDetails.do">https://earlyvoting.texas-election.com/Elections/getElectionDetails.do</a></p>
+          <p style={{...formStyle}, {fontSize: 12}}>The data used for this project was made available by the Texas Secretary of State Office:</p>
+          <p style={{...formStyle}, {fontSize: 12}}><a href="https://earlyvoting.texas-election.com/Elections/getElectionDetails.do">https://earlyvoting.texas-election.com/Elections/getElectionDetails.do</a></p>
+        </div>
+        <div id="feedback" style={formStyle} className="feedback">
+          <p style={{...formStyle}, {fontSize: 12}}><br/>Feedback is always appreciated!</p>
+          <p style={formStyle}>
+            <span style={{marginLeft:'0em'}}><a href="mailto:kg.sleeve@gmail.com" target="_blank" style={{color:'#db4437'}}><SiGmail /></a></span>
+            <span style={{marginLeft:'2em'}}><a href="https://twitter.com/kgsleeve" target="_blank" style={{color:'#1da1f2'}}><SiTwitter /></a></span>
+            <span style={{marginLeft:'2em'}}><a href="https://instagram.com/kgilder" target="_blank" style={{color:'#c32aa3'}}><SiInstagram /></a></span>
+          </p>
         </div>
       </div>
     );
