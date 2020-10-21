@@ -299,7 +299,7 @@ class Map extends React.Component {
       totalVotes += county[voteIndex];
       denominatorTotal += county[denominatorIndex];
     });
-    const voteString = "Combined Results: " + totalVotes.toLocaleString('en') + ' votes';
+    const voteString = "Combined County Results: " + totalVotes.toLocaleString('en') + ' votes';
     var displayString;
     if(selectedOption === 'votes') {
       //return vote totals
