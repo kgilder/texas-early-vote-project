@@ -1,0 +1,11 @@
+
+.gradient {
+  height: 100px;
+  width: 50%;
+  background-image:
+    linear-gradient(
+      to right, 
+      hsl(240, '60%', '100%'),
+      hsl(240, '60%', '10%')
+    );
+}

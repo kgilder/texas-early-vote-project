@@ -1,5 +1,6 @@
 
 import React from 'react';
+import './texas-early-vote-project.css';
 import texasCountyGeoJSON from './cb_2019_us/cb_2019_us_county_20m.geojson';
 import electionStyle from './light-google-map-style.json';
 import Tabletop from 'tabletop';
@@ -29,7 +30,7 @@ class Map extends React.Component {
       googleData: null,
       buildDictNotDone: true,
       selectUpdate: true,
-      selectedOption: 'votes',
+      selectedOption: 'turnout2016',
       mapHasSelected: false,
       mapHasMouseOver: false,
       currentSelection: '',
@@ -419,17 +420,17 @@ class Map extends React.Component {
         <div id="form" style={formStyle} className="form">
           <form>
             <div onChange={this.handleOptionChange.bind(this)} className="form-check">
-              <label htmlFor="totalVotes">
+              <label htmlFor="percentage2016">
                 <input
-                  id="totalVotes"
+                  id="percentage2016"
                   type="radio"
-                  name="totalVotes"
-                  value="votes"
-                  checked={selectedOption === 'votes'}
+                  name="percentage2016"
+                  value="turnout2016"
+                  checked={selectedOption === 'turnout2016'}
                   onChange={this.handleOptionChange.bind(this)}
                   className="form-check-input"
                 />
-                Total mail-in and in-person votes
+                Votes as percentatge of 2016 turnout
               </label>
             </div>
             <div onChange={this.handleOptionChange.bind(this)} className="form-check">
@@ -446,19 +447,18 @@ class Map extends React.Component {
                 Votes as percentage of registered voters
               </label>
             </div>
-            <div></div>
             <div onChange={this.handleOptionChange.bind(this)} className="form-check">
-              <label htmlFor="percentage2016">
+              <label htmlFor="totalVotes">
                 <input
-                  id="percentage2016"
+                  id="totalVotes"
                   type="radio"
-                  name="percentage2016"
-                  value="turnout2016"
-                  checked={selectedOption === 'turnout2016'}
+                  name="totalVotes"
+                  value="votes"
+                  checked={selectedOption === 'votes'}
                   onChange={this.handleOptionChange.bind(this)}
                   className="form-check-input"
                 />
-                Votes as percentatge of 2016 turnout
+                Total mail-in and in-person votes
               </label>
             </div>
           </form>
