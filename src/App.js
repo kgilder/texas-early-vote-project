@@ -416,7 +416,7 @@ class Map extends React.Component {
     return (
       <div id="map-container">
         <h1 style={formStyle} >Early Voting Data for Texas Counties</h1>
-        <h4 style={formStyle} >There are {timeLeft.days + 1} days left until Election Day</h4>
+        { 0 ? <h4 style={formStyle} >There are {timeLeft.days + 1} days left until Election Day</h4>:null}
         <div id="form" style={formStyle} className="form">
           <form>
             <div onChange={this.handleOptionChange.bind(this)} className="form-check">
