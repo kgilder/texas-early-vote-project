@@ -2,18 +2,6 @@
 Author: Ken Gildersleeve
 Date: May 22, 2020
 
-The purpose of this project is to create a simple way for voters in the state of Texas to request an application 
-to vote by mail. 
-
-The process is complex and has only been worsened by the ongoing COVID-19 pandemit. This has greatly increased the 
-need to vote by mail, a necessary precaution to protect the health of all voters, while at the same time protecting
-their right to vote. Unfortunately, a significant effort will stil be required of any voter in the state of Texas, 
-but my hope is to simplify that process slightly and to inform voters of Texas how to safely carry out their
-civic duty. 
-
-All the best, 
-Ken
-
 Application Notes:
 
 Application created using create-react-app
