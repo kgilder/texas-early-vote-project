@@ -343,7 +343,7 @@ class Map extends React.Component {
         denominator = Number(earlyVoteDict[name.toLowerCase()].turnout2016.replace(/,/g,''));
       }
       var numerator = Number(earlyVoteDict[name.toLowerCase()].votes.replace(/,/g,''));
-      var percentage = parseFloat(100 - (parseFloat(numerator/denominator)*90)).toFixed(0)+"%";
+      var percentage = parseFloat(100 - (parseFloat(numerator/denominator)*50)).toFixed(0)+"%";
       var color = "hsl(240, 60%," + percentage + ")";
       return {
         fillColor: color,
