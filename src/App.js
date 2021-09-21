@@ -3,7 +3,7 @@ import React from 'react';
 import './texas-early-vote-project.css';
 import texasCountyGeoJSON from './cb_2019_us/cb_2019_us_county_20m.geojson';
 import electionStyle from './light-google-map-style.json';
-import Tabletop from 'tabletop';
+import Papa from 'papaparse';
 import {isMobile} from 'react-device-detect';
 import {SiTwitter, SiInstagram, SiGmail} from 'react-icons/si';
 
@@ -39,6 +39,7 @@ class Map extends React.Component {
       texasInfo: {},
       texasInfoNotDone: true,
     }
+    this.updateData = this.updateData.bind(this);
   }
 
   getGoogleMaps() {
@@ -66,16 +67,22 @@ class Map extends React.Component {
     return this.googleMapsPromise;
   }
 
+  //https://docs.google.com/spreadsheets/d/e/2PACX-1vTCC6uPvxYfONm8869ynDAFcy3C_4dxYN0FHTeMqG6efXretXaH9lX7M3kjqMYK4o3VujertL6lqhii/pub?gid=0&single=true&output=csv
   componentWillMount() {
-    Tabletop.init({
-      key: process.env.REACT_APP_GOOGLE_SHEETS_KEY,
-      wanted: ['Sheet1'],
-      callback: googleData => {
-        this.setState({ googleData: googleData }); 
-      },
-      simpleSheet: true,
-    });
+    Papa.parse(
+      'https://docs.google.com/spreadsheets/d/e/2PACX-1vTCC6uPvxYfONm8869ynDAFcy3C_4dxYN0FHTeMqG6efXretXaH9lX7M3kjqMYK4o3VujertL6lqhii/pub?gid=0&single=true&output=csv',
+      {
+        download: true,
+        header: true,
+        complete: this.updateData,
+      }
+    );
     this.getGoogleMaps();
+  }
+
+  updateData(result) {
+    const { googleData } = result; 
+    this.setState({ googleData });
   }
 
   componentDidMount() {

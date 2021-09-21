@@ -9,6 +9,7 @@
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "dotenv": "^8.2.0",
+    "papaparse": "^5.3.1",
     "react": "^16.13.1",
     "react-db-google-sheets": "^2.0.0",
     "react-device-detect": "^1.14.0",
