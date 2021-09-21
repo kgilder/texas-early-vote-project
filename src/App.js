@@ -27,7 +27,7 @@ class Map extends React.Component {
     super(props)
     this.state = {
       map: null,
-      googleData: null,
+      data: [],
       buildDictNotDone: true,
       selectUpdate: true,
       selectedOption: 'turnout2016',
@@ -67,7 +67,6 @@ class Map extends React.Component {
     return this.googleMapsPromise;
   }
 
-  //https://docs.google.com/spreadsheets/d/e/2PACX-1vTCC6uPvxYfONm8869ynDAFcy3C_4dxYN0FHTeMqG6efXretXaH9lX7M3kjqMYK4o3VujertL6lqhii/pub?gid=0&single=true&output=csv
   componentWillMount() {
     Papa.parse(
       'https://docs.google.com/spreadsheets/d/e/2PACX-1vTCC6uPvxYfONm8869ynDAFcy3C_4dxYN0FHTeMqG6efXretXaH9lX7M3kjqMYK4o3VujertL6lqhii/pub?gid=0&single=true&output=csv',
@@ -81,8 +80,8 @@ class Map extends React.Component {
   }
 
   updateData(result) {
-    const { googleData } = result; 
-    this.setState({ googleData });
+    const { data } = result; 
+    this.setState({ data });
   }
 
   componentDidMount() {
@@ -230,10 +229,10 @@ class Map extends React.Component {
   }
 
   buildDictionary() {
-    const { map, googleData } = this.state;
+    const { map, data } = this.state;
     earlyVoteDict = {}; 
     var updatedDate = '';
-    googleData.map(function(row) {
+    data.map(function(row) {
       earlyVoteDict[row.County.toLowerCase()] = { votes: row['Cumulative In-Person And Mail Voters'], registered: row['Registered Voters'], turnout2016: row['2016 Total Turnout'] };
       if(row.County.toLowerCase() === 'anderson') {
         updatedDate = row['Updated Date'];
@@ -365,9 +364,11 @@ class Map extends React.Component {
     this.setState({ selectedOption: selectedOption });
   }
   componentDidUpdate() {
-    const { googleData, buildDictNotDone, texasInfoNotDone } = this.state;
-    if(googleData) {
-      if (googleData.length === 255) {
+    const { data, buildDictNotDone, texasInfoNotDone } = this.state;
+    console.log("data", data); 
+    if(data) {
+      console.log("data.length", data.length); 
+      if (data.length === 255) {
         if(buildDictNotDone) {
           this.buildDictionary(); 
         }
